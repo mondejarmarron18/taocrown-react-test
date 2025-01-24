@@ -8,6 +8,15 @@ Your app should only utilize `https://api.spacexdata.com/v3/launches` endpoint.
 
 ---
 
+## Requirements
+
+- **Node:** Version 12.
+- **Yarn:** Version 1.22.
+
+_Please use **Yarn** as your package manager. Using multiple package managers (e.g., npm and Yarn) in the same project can lead to inconsistencies and conflicts. For a smooth setup and dependency management, it's highly recommended to stick with one package manager._
+
+---
+
 What the app should do:
 
 - Display a loading component.
