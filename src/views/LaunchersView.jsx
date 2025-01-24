@@ -83,7 +83,7 @@ function LaunchersView() {
       <input
         type="text"
         onChange={handleSearch}
-        placeholder="Search year launch: e.g 2020"
+        placeholder="Search..."
         style={{
           padding: "1rem",
           border: "1px solid #ccc",
