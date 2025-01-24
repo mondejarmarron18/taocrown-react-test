@@ -1,3 +1,11 @@
+**Enhanced Version:**
+For an enhanced version of this app, you can access the v2 branch for additional improvements:
+[Access v2 branch here](https://github.com/mondejarmarron18/taocrown-react-test/tree/v2)
+
+**Preview:**
+
+<img alt="v2 branch" src="./v2.png" style="max-width: 600px;">
+
 # JS Code Test
 
 This code test will determine your approach on solving problems.

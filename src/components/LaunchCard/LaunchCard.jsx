@@ -73,8 +73,8 @@ const LaunchCard = (props) => {
         >
           <div style={{ display: "flex", gap: "0.2rem" }}>
             <span>{getTimeAgo(props.launch_date_local)}</span>|
-            <Link to={props.links.article_link}>article</Link>|
-            <Link to={props.links.video_link}>video</Link>
+            <a href={props.links.article_link}>article</a>|
+            <a href={props.links.video_link}>video</a>
           </div>
           <div style={{ display: "flex", gap: "0.5rem" }}>
             {!props.links.mission_patch_small ? (
