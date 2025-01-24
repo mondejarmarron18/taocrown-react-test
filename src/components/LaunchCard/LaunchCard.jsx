@@ -1,109 +1,80 @@
 import React from "react";
 import { getTimeAgo } from "../../utils/fomatter";
-import { Link } from "react-router-dom";
+import "./launch-card.scss";
 
 const LaunchCard = (props) => {
-  const [showDetails, setShowDetails] = React.useState(false);
-
-  const toggelDetails = () => {
-    setShowDetails(!showDetails);
-  };
+  const [hideDetails, setHideDetails] = React.useState(true);
 
   const renderStatus = () => {
-    const style = {
-      fontSize: "0.75rem",
-      padding: "0.1rem 0.5rem",
-      borderRadius: "15px",
-    };
-
     if (props.upcoming) {
       return (
-        <span
-          style={{
-            backgroundColor: "deepskyblue",
-            color: "white",
-            ...style,
-          }}
-        >
+        <div className="launch-card__status launch-card__status--upcoming">
           Upcoming
-        </span>
+        </div>
       );
     }
 
     if (props.launch_success) {
       return (
-        <span
-          style={{
-            backgroundColor: "green",
-            color: "white",
-            ...style,
-          }}
-        >
+        <div className="launch-card__status launch-card__status--success">
           Success
-        </span>
+        </div>
       );
     }
 
     return (
-      <span style={{ backgroundColor: "red", color: "white", ...style }}>
+      <div className="launch-card__status launch-card__status--failure">
         Failed
-      </span>
+      </div>
     );
   };
 
   return (
     <div
+      className={`launch-card ${props.className}`}
       style={{
-        textAlign: "left",
-        padding: "1rem",
-        border: "1px solid #ccc",
-        borderRadius: "8px",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "flex-start",
-        gap: "1rem",
+        backgroundImage: `url(${props.links.flickr_images[0]})`,
       }}
     >
-      <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-        <h2>{props.mission_name} </h2> {renderStatus()}
+      <div className="launch-card__front">
+        <div className="launch-card__front-header">{renderStatus()}</div>
+        <div className="launch-card__front-body">
+          {!props.links.mission_patch_small ? (
+            "No image yet"
+          ) : (
+            <img
+              src={props.links.mission_patch_small}
+              alt={props.mission_name}
+              className="launch-card__front-image"
+            />
+          )}
+          <h2 className="launch-card__front-title">{props.mission_name} </h2>{" "}
+        </div>
+        <div className="launch-card__front-footer"></div>
       </div>
-      {showDetails && (
-        <div
-          style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}
-        >
-          <div style={{ display: "flex", gap: "0.2rem" }}>
-            <span>{getTimeAgo(props.launch_date_local)}</span>|
-            <Link to={props.links.article_link}>article</Link>|
-            <Link to={props.links.video_link}>video</Link>
-          </div>
-          <div style={{ display: "flex", gap: "0.5rem" }}>
-            {!props.links.mission_patch_small ? (
-              "No image yet"
-            ) : (
-              <img
-                src={props.links.mission_patch_small}
-                alt={props.mission_name}
-                style={{ width: "100px", height: "100px" }}
-              />
-            )}
-            <p>{props.details}</p>
+
+      <div
+        className={`launch-card__body ${
+          !hideDetails ? "launch-card__body--visible" : ""
+        }`}
+      >
+        <div className={`launch-card__body-info`}>
+          <span className="launch-card__body-date">
+            {getTimeAgo(props.launch_date_local)}
+          </span>
+          <div className="launch-card__body-links">
+            <a href={props.links.article_link}>article</a>|
+            <a href={props.links.video_link}>video</a>
           </div>
         </div>
-      )}
+        <div className="launch-card__body-details">{props.details}</div>
+      </div>
       <button
-        onClick={toggelDetails}
-        style={{
-          padding: "0.7rem 1rem",
-          backgroundColor: "blue",
-          color: "white",
-          border: "none",
-          textTransform: "uppercase",
-          cursor: "pointer",
-          borderRadius: "8px",
-        }}
-      >
-        {showDetails ? "Hide" : "Show"}
-      </button>
+        className={`launch-card__body-button ${
+          !hideDetails ? "" : "launch-card__body-button--open"
+        }`}
+        onClick={() => setHideDetails((prev) => !prev)}
+      ></button>
     </div>
   );
 };

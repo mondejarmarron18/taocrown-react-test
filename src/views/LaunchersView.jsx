@@ -3,14 +3,17 @@ import useFetchLaunches from "../hooks/useFetchLaunches";
 import LaunchCard from "../components/LaunchCard";
 import _ from "lodash";
 import Spinner from "../components/Spinner";
+import "./launcher-view.scss";
+import { Swiper, SwiperSlide } from "swiper/react";
 
 function LaunchersView() {
   const { data, isLoading, exec } = useFetchLaunches();
   const [launches, setLaunches] = useState([]);
-  const [filter, setFilter] = useState({ offset: 0, limit: 5 });
+  const [filter, setFilter] = useState({ offset: 0, limit: 3 });
   const observerRef = useRef(null);
   const listContainerRef = useRef(null);
   const [search, setSearch] = useState("");
+  const [activeCardIndex, setActiveCardIndex] = useState(1);
 
   useEffect(() => {
     exec(filter);
@@ -72,50 +75,63 @@ function LaunchersView() {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: "1rem",
-        alignItems: "center",
-      }}
-    >
-      <input
-        type="text"
-        onChange={handleSearch}
-        placeholder="Search..."
-        style={{
-          padding: "1rem",
-          border: "1px solid #ccc",
-          borderRadius: "0.25rem",
-          width: "100%",
-          maxWidth: "400px",
-        }}
-      />
-      <div
-        ref={listContainerRef}
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "1rem",
-          maxWidth: "400px",
-          width: "100%",
-          maxHeight: "600px",
-          overflowY: "auto",
-          paddingBottom: "30px",
-        }}
-      >
-        {(search ? filteredData : launches).map((launch) => (
-          <LaunchCard key={launch._id} {...launch} />
-        ))}
+    <div className="launcher-view">
+      <div className="launcher-view__header">
+        <h1>Space X Launches</h1>
+        <input
+          type="text"
+          onChange={handleSearch}
+          placeholder="Search..."
+          className="launcher-view__search"
+        />
+      </div>
+      <div ref={listContainerRef} className="launcher-list">
+        <Swiper
+          spaceBetween={10}
+          slidesPerView={3}
+          onSlideChange={(e) => setActiveCardIndex(e.activeIndex + 1)}
+          initialSlide={1}
+          centeredSlides={filteredData.length < 2}
+          className="launcher-list__swiper"
+        >
+          {(search ? filteredData : launches).map((launch, index) => (
+            <SwiperSlide key={launch._id}>
+              <LaunchCard
+                key={launch._id}
+                {...launch}
+                className={
+                  (index === activeCardIndex || filteredData.length < 2) &&
+                  "launch-card--active"
+                }
+              />
+            </SwiperSlide>
+          ))}
 
-        {isLoading && <Spinner />}
+          {isLoading && (
+            <SwiperSlide>
+              <div className="launch-card">
+                <Spinner />
+              </div>
+            </SwiperSlide>
+          )}
 
-        {!isLoading && !data.length ? (
-          <div className="no-content">No more data</div>
-        ) : (
-          <div ref={observerRef} style={{ height: "1px", width: "100%" }} />
-        )}
+          {!isLoading && !data.length ? (
+            <SwiperSlide>
+              <div className="launch-card launch-card--no-data">
+                No more data
+              </div>
+            </SwiperSlide>
+          ) : (
+            !search && (
+              <SwiperSlide>
+                <div
+                  ref={observerRef}
+                  className="launch-card launch-card--no-data"
+                />
+              </SwiperSlide>
+            )
+          )}
+        </Swiper>
       </div>
     </div>
   );
