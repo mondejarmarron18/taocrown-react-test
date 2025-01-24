@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useMemo } from "react";
 import useFetchLaunches from "../hooks/useFetchLaunches";
 import LaunchCard from "../components/LaunchCard";
-import _, { set } from "lodash";
+import _ from "lodash";
 import Spinner from "../components/Spinner";
 
 function LaunchersView() {
@@ -10,7 +10,7 @@ function LaunchersView() {
   const [filter, setFilter] = useState({ offset: 0, limit: 5 });
   const observerRef = useRef(null);
   const listContainerRef = useRef(null);
-  const [filteredLaunches, setFilteredLaunches] = useState([]);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     exec(filter);
@@ -24,7 +24,7 @@ function LaunchersView() {
 
   // infinite scroll
   useEffect(() => {
-    if (!data.length || filteredLaunches.length) return;
+    if (!data.length || search) return;
 
     const options = {
       root: listContainerRef.current,
@@ -50,25 +50,25 @@ function LaunchersView() {
         observer.unobserve(observerRef.current);
       }
     };
-  }, [isLoading, filteredLaunches]);
+  }, [isLoading, search]);
+
+  const filteredData = useMemo(() => {
+    return launches.filter(
+      (launch) =>
+        launch.mission_name.toLowerCase().includes(search) ||
+        (launch.details && launch.details.toLowerCase().includes(search)) ||
+        launch.launch_date_local.toLowerCase().includes(search)
+    );
+  }, [search, launches]);
 
   const handleSearchDebounce = _.debounce((value) => {
-    const result = launches.filter(
-      (launch) =>
-        launch.mission_name.toLowerCase().includes(value) ||
-        (launch.details && launch.details.toLowerCase().includes(value)) ||
-        launch.launch_date_local.toLowerCase().includes(value)
-    );
-
-    setFilteredLaunches(result);
+    setSearch(value.toLowerCase());
   }, 500);
 
   const handleSearch = (e) => {
     const value = e.target.value;
 
-    if (!value) return setFilteredLaunches([]);
-
-    handleSearchDebounce(value.toLowerCase());
+    handleSearchDebounce(value);
   };
 
   return (
@@ -105,11 +105,9 @@ function LaunchersView() {
           paddingBottom: "30px",
         }}
       >
-        {(filteredLaunches.length ? filteredLaunches : launches).map(
-          (launch) => (
-            <LaunchCard key={launch._id} {...launch} />
-          )
-        )}
+        {(search ? filteredData : launches).map((launch) => (
+          <LaunchCard key={launch._id} {...launch} />
+        ))}
 
         {isLoading && <Spinner />}
 
